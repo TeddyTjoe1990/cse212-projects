@@ -1,5 +1,13 @@
 ﻿public static class MysteryStack1 {
     public static string Run(string text) {
-        return text; // Simply return the original input without reversing
+        var stack = new Stack<char>();
+        foreach (var letter in text)
+            stack.Push(letter);
+
+        var result = "";
+        while (stack.Count > 0)
+            result += stack.Pop();
+
+        return result;
     }
 }
