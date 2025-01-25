@@ -9,10 +9,9 @@
 /// </summary>
 public class TakingTurnsQueue
 {
-    //private readonly PersonQueue _people = new();
-    private Queue<Person> _queue = new Queue<Person>();
+    private readonly PersonQueue _people = new();
 
-    //public int Length => _people.Length;
+    public int Length => _people.Length;
 
     /// <summary>
     /// Add new people to the queue with a name and number of turns
@@ -21,7 +20,8 @@ public class TakingTurnsQueue
     /// <param name="turns">Number of turns remaining</param>
     public void AddPerson(string name, int turns)
     {
-        _queue.Enqueue(new Person(name, turns));
+        var person = new Person(name, turns);
+        _people.Enqueue(person);
     }
 
     /// <summary>
@@ -31,31 +31,31 @@ public class TakingTurnsQueue
     /// person has an infinite number of turns.  An error exception is thrown 
     /// if the queue is empty.
     /// </summary>
-    // Gets the next person in the queue, decrements their turns and re-enqueues them if they still have turns left
     public Person GetNextPerson()
     {
-        if (_queue.Count == 0)
+        if (_people.IsEmpty())
         {
             throw new InvalidOperationException("No one in the queue.");
         }
-
-        var person = _queue.Dequeue();
-
-        // If the person has a finite number of turns, decrement them
-        if (person.Turns > 0)
+        else
         {
-            person.Turns--;
-        }
+            Person person = _people.Dequeue();
+            if (person.Turns <= 0)
+            {
+                _people.Enqueue(person);
+            }
+            else if (person.Turns > 1)
+            {
+                person.Turns -= 1;
+                _people.Enqueue(person);
+            }
 
-        // If the person still has turns or has infinite turns, re-enqueue them
-        if (person.Turns > 0 || person.Turns <= 0)
-        {
-            _queue.Enqueue(person);
+            return person;
         }
-
-        return person;
     }
 
-    // Returns the current length of the queue
-    public int Length => _queue.Count;
+    public override string ToString()
+    {
+        return _people.ToString();
+    }
 }
