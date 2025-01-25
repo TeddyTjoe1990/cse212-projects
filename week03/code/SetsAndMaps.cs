@@ -20,9 +20,41 @@ public static class SetsAndMaps
     /// </summary>
     /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
     public static string[] FindPairs(string[] words)
+    
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+
+        HashSet<string> setOfWords = new HashSet<string>();
+        List<string> listOfWords = new List<string>();
+        // foor loop that will check the following:
+        //does it exist in the set?
+        //if no, we add it. 
+        //does it has the pair in the set?
+        //if yes, we add the two values to the List as string
+        //"ab", "aa", "ba"
+
+        foreach (string word in words)
+        {
+            if (!setOfWords.Contains(word))
+            {
+                
+                string opposite = $"{word[1]}{word[0]}";
+             
+                if(setOfWords.Contains(opposite))
+                {
+                listOfWords.Add($"{word} & {opposite}");
+                }
+                setOfWords.Add(word);
+
+            }
+            
+
+
+        }
+
+        string[] results = listOfWords.ToArray();
+
+        return results;
     }
 
     /// <summary>
@@ -43,6 +75,15 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            if(degrees.ContainsKey(fields[3]))
+            {
+                degrees[fields[3]] += 1;
+            }
+            else
+            {
+                degrees[fields[3]] = 1;
+            }
+
         }
 
         return degrees;
@@ -67,7 +108,59 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        //Create a dictionary that will count how many of each letter we have in the first word
+        //we go by each letter and we increase the count in case needed
+
+
+        var letters = new Dictionary<char, int>();
+        foreach (char character in word1)
+        {
+            if (character != ' ')
+            {
+                char finalLetter = char.ToLower(character);
+                if (letters.ContainsKey(finalLetter))
+                {
+                    letters[finalLetter] += 1; 
+                }
+                else
+                {
+                    letters[finalLetter] = 1;
+                }
+            }
+        }
+        // our second foreach loop will take into consideration the second word, and will decrease the count of letter in the dictionary.
+        //if the count equals zero, we will remove the letter from the dictionary
+        foreach (char character in word2)
+        {
+            if (character != ' ')
+            {
+                char finalLetter = char.ToLower(character);
+                if (letters.ContainsKey(finalLetter))
+                {
+                    letters[finalLetter] -= 1; 
+
+                    if(letters[finalLetter] == 0)
+                    {
+                        letters.Remove(finalLetter);
+                    }
+                }
+                else
+                {
+                    letters[finalLetter] = 1;
+                }
+            }
+
+        }
+        // we expect that the dictionary will no longer have elements if the first word has the same number and characters of the second word
+        if (letters.Count > 0)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
+
     }
 
     /// <summary>
@@ -95,12 +188,21 @@ public static class SetsAndMaps
         var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
+        Console.WriteLine(featureCollection);
 
         // TODO Problem 5:
         // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+        List<string> result = new List<string>();
+        List<FeaturesList> testing = featureCollection.Features;
+        foreach (FeaturesList feature in testing)
+        {
+            result.Add($"{feature.Properties.Place} - Mag {feature.Properties.Mag}");
+        }
+        var resultArray = result.ToArray();
+
+        return resultArray;
     }
 }
